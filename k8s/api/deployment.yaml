@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchen-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitchen-api
+  template:
+    metadata:
+      labels:
+        app: kitchen-api
+    spec:
+      containers:
+      - name: api
+        image: kitchen-api:local
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          value: mongodb://mongo:27017/kitchendb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kitchen-api
+spec:
+  selector:
+    app: kitchen-api
+  ports:
+  - port: 3000
+    targetPort: 3000
