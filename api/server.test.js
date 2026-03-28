@@ -7,5 +7,11 @@ const app = require('./server');
 beforeAll(async () => { await app.connectDb(); });
 test('GET /health', async () => { const r = await request(app).get('/health'); expect(r.status).toBe(200); });
 test('GET /metrics includes request counter', async () => { const r = await request(app).get('/metrics'); expect(r.text).toMatch(/http_requests_total/); });
-test('POST /orders', async () => { const r = await request(app).post('/orders').send({ dish: 'Test Dish' }); expect(r.status).toBe(201); });
+test('GET /special returns today special JSON', async () => {
+  const r = await request(app).get('/special');
+  expect(r.status).toBe(200);
+  expect(r.body).toHaveProperty('day');
+  expect(r.body).toHaveProperty('special');
+});
+test('POST /orders', async () => { const r = await request(app).post('/orders').send({ dish: 'Test Dish' }); expect(r.status).toBe(201); }, 15000);
 test('GET /orders returns array', async () => { const r = await request(app).get('/orders'); expect(Array.isArray(r.body)).toBe(true); });

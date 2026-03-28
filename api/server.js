@@ -102,7 +102,12 @@ function startOrderStatusWorker() {
 }
 
 function normalizeRoute(path) {
-  if (path === "/metrics" || path === "/health" || path === "/ready")
+  if (
+    path === "/metrics" ||
+    path === "/health" ||
+    path === "/ready" ||
+    path === "/special"
+  )
     return path;
   if (path === "/orders" || path.startsWith("/orders")) return "/orders";
   return path;
@@ -141,6 +146,20 @@ app.get("/health", (req, res) =>
   }),
 );
 app.get("/ready", (req, res) => res.status(200).send("OK"));
+app.get("/special", (req, res) => {
+  const specialsByDay = {
+    Sunday: "Paneer Butter Masala",
+    Monday: "Veg Biryani",
+    Tuesday: "Chole Bhature",
+    Wednesday: "Grilled Sandwich",
+    Thursday: "Masala Dosa",
+    Friday: "Chicken Curry",
+    Saturday: "Pasta",
+  };
+  const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+  const special = specialsByDay[today] || "Chef's Choice";
+  res.json({ day: today, special });
+});
 app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
